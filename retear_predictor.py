@@ -20,9 +20,7 @@ def retear_likelihood():
         abort(HTTPStatus.BAD_REQUEST.value, err.messages)
 
     return jsonify(
-        {'likelihood': predictor_data.age + predictor_data.gender + predictor_data.osteoporosis +
-                      predictor_data.work_activity_level + predictor_data.tear_width + predictor_data.tear_retraction +
-                      predictor_data.full_thickness + predictor_data.fatty_infiltration})
+        {'likelihood': predictor_data.predict_retear_rate()})
 
 
 @app.route('/')
