@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
     <title>Retear Likelihood Calculator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>
-        function predict_retear(age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness, fatty_infiltration, likelihood, error_div) {
+        function predict_retear(age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness, fatty_infiltration, answer, answer_div) {
+            resetErrors()
             $.post('{{ url_for('retear_likelihood') }}', {
                 age: $(age).val(),
                 gender: $(gender).val(),
@@ -18,61 +20,133 @@
                 fatty_infiltration: $(fatty_infiltration).val()
             })
                 .done(function(response) {
-                    $(likelihood).val(response['likelihood'])
+                    $(answer).text(Math.round(response['likelihood']*100) + '%')
+                    $(answer_div).removeClass('hiddenanswer');
                 })
                 .fail(function(xhr, textStatus, textThrown) {
-                    $(error_div).text(Object.values($.parseJSON(xhr.responseText)))
+                    $.each($.parseJSON(xhr.responseText), function(k,v)
+                    {
+                        console.log(k + " => " + v[0]);
+                        var msg = '<label class="error" for="'+ k +'">'+ v[0] +'</label>';
+                        $('input[id="' + k + '"], select[id="' + k + '"]').addClass('inputTxtError').after(msg);
+                    })
                 })
+        }
+        function resetErrors() {
+            $('form input, form select').removeClass('inputTxtError');
+            $('label.error').remove();
+        }
+        function hideDiv(divId) {
+            $(divId).addClass('hiddenanswer')
         }
     </script>
 </head>
 <body>
 <div id="container">
-    <h1>Retear Likelihood Calculator</h1>
+    <div id="calc_title">
+        <h1>Retear Likelihood Calculator</h1>
+    </div>
     <div id="calculator">
         <form>
-            <p>Age: <input id="age" type="text" placeholder="76">
-            <p>Gender:
-                <select id="gender">
-                    <option disabled selected value="2">-- Choose an Option --</option>
-                    <option value="1">Female</option>
-                    <option value="0">Male</option>
-                </select>
-            <p>Osteoporosis:
-                <select id="osteoporosis">
-                    <option disabled selected value="2">-- Choose an Option --</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                </select>
-            <p>High Level Work Activity:
-                <select id="work_activity_level">
-                    <option disabled selected value="2">-- Choose an Option --</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                </select>
-            <p>Tear Width (mm): <input id="tear_width" type="text" placeholder="48">
-            <p>Tear Retraction (mm): <input id="tear_retraction" type="text" placeholder="48">
-            <p>Full Thickness:
-                <select id="full_thickness">
-                    <option disabled selected value="2">-- Choose an Option --</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                </select>
-            <p>Goutallier fatty infiltration classification:
-                <select id="fatty_infiltration">
-                    <option disabled selected value="-1">-- Choose an Option --</option>
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
-            <p>Retear Rate: <input id="likelihood_rate" type="text" placeholder="">
-            <p><button type="button" id="calculate" onclick="predict_retear('#age','#gender','#osteoporosis','#work_activity_level','#tear_width','#tear_retraction','#full_thickness','#fatty_infiltration','#likelihood_rate','#error_div')">Calculate!</button>
+            <div id="cal_table" class="rTable">
+                <div class="rTableRow" id="age_row">
+                    <div class="rTableCell">
+                        <label for="age">Age</label>
+                    </div>
+                    <div class="rTableCell">
+                        <input id="age" type="text" placeholder="Age" size="3" maxlength="3">
+                    </div>
+                </div>
+                <div class="rTableRow" id="gender_row">
+                    <div class="rTableCell">
+                        <label for="gender">Gender</label>
+                    </div>
+                    <div class="rTableCell">
+                        <select id="gender">
+                            <option disabled selected value="-1">Gender</option>
+                            <option value="1">Female</option>
+                            <option value="0">Male</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="rTableRow" id="osteoporosis_row">
+                    <div class="rTableCell">
+                        <label for="osteoporosis">Osteoporosis?</label>
+                    </div>
+                    <div class="rTableCell">
+                        <select id="osteoporosis">
+                            <option disabled selected value="-1">Osteoporosis?</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="rTableRow" id="work_activity_level_row">
+                    <div class="rTableCell">
+                        <label for="work_activity_level">Work Activity Level</label>
+                    </div>
+                    <div class="rTableCell">
+                        <select id="work_activity_level">
+                            <option disabled selected value="-1">Work Activity Level</option>
+                            <option value="1">High</option>
+                            <option value="0">Not High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="rTableRow" id="tear_width_row">
+                    <div class="rTableCell">
+                        <label for="tear_width">Tear Width (mm)</label>
+                    </div>
+                    <div class="rTableCell">
+                        <input id="tear_width" type="text" placeholder="Width" size="3" maxlength="3">
+                    </div>
+                </div>
+                <div class="rTableRow" id="tear_retraction_row">
+                    <div class="rTableCell">
+                        <label for="tear_retraction">Tear Retraction (mm)</label>
+                    </div>
+                    <div class="rTableCell">
+                        <input id="tear_retraction" type="text" placeholder="Retraction" size="5" maxlength="3">
+                    </div>
+                </div>
+                <div class="rTableRow" id="full_thickness_row">
+                    <div class="rTableCell">
+                        <label for="full_thickness">Full Thickness Tear?</label>
+                    </div>
+                    <div class="rTableCell">
+                        <select id="full_thickness">
+                            <option disabled selected value="-1">Full Thickness</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="rTableRow" id="fatty_infiltration_row">
+                    <div class="rTableCell">
+                        <label for="full_thickness">Goutallier Classification</label>
+                    </div>
+                    <div class="rTableCell">
+                        <select id="fatty_infiltration">
+                            <option disabled selected value="-1">Fatty Infiltration</option>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="calculate" onclick="predict_retear('#age','#gender','#osteoporosis','#work_activity_level','#tear_width','#tear_retraction','#full_thickness','#fatty_infiltration','#likelihood_answer','#answer_div')">Calculate!</button>
+            </div>
         </form>
-        <p>
-            <div id="error_div"></div>
-        </p>
+    </div>
+    <div class="answer hiddenanswer" id="answer_div">
+        <div class="intermediate">
+            <div id="likelihood_answer"></div>
+            <span id="close" onclick="hideDiv('#answer_div')">x</span>
+        </div>
     </div>
 </div>
 </body>

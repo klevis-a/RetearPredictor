@@ -1,126 +1,253 @@
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
 body {
-  font-family: Roboto;
-  background: #8E0E00;
-  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to left, #8E0E00, #1F1C18);
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to left, #8E0E00, #1F1C18);
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    font-family: Lato, sans-serif;
+    background: #ffffff;
+}
+
+/* Mobile Styles */
+@media only screen and (max-width: 400px) {
+}
+
+/* Tablet Styles */
+@media only screen and (min-width: 401px) and (max-width: 960px) {
+}
+
+/* Desktop Styles */
+@media only screen and (min-width: 961px) {
 }
 
 #container {
-  height: 525px;
-  width: 360px;
-  margin: 100px auto;
-  background: #f7f7f7;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
+    position: relative;
+    display: table;
+    background: #f7f7f7;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    margin: 30px auto 0;
+    border-width: 0px 1px 1px 1px;
+    border-style: dotted;
+    border-color: #1F030C;
+}
+
+#calc_title {
+    margin-bottom: 10px;
 }
 
 h1 {
-  background: #1F030C;
-  color: white;
-  margin: 0;
-  padding: 10px 100px;
-  text-transform: uppercase;
-  font-size: 18px;
-  font-weight: normal;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+    background: #1F030C;
+    color: white;
+    margin: 0;
+    padding: 10px 10px;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 18px;
+    font-weight: normal;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border: 1px solid #1F030C;
 }
 
-p {
-  padding-left: 20px;
+.rTable {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
 }
 
-form input[type="text"] {
-  width=90px;
+.rTableRow {
+    width: 100%;
+    display: table-row;
+    border-bottom: 1px dotted #1F030C;
 }
 
-input {
-  padding-left: 20px;
+.rTableCell {
+    display: table-cell;
+    width: 50%;
+    vertical-align: middle;
+    padding: 5px 5px 5px 5px;
 }
 
-#billamt {
-  font-size: 14px;
-  /*color: #2980b9;*/
-  color: #red;
-  background-color: #f7f7f7;
-  width: 60%;
-  padding: 5px 5px 8px 8px;
+input:focus, select:focus {
+    outline: none;
+    box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -o-box-shadow: none !important;
+    -ms-box-shadow: none !important;
 }
 
-#billamt:focus {
-  background: #fff;
-  border: 3px solid #2980b9;
-  outline: none;
+input, select {
+    display: inline;
+    border: none;
+    border-bottom: 2px solid #999;
+    border-radius: 5px;
+    padding: 6px 10px;
+    box-sizing: border-box;
 }
 
-#peopleamt {
-  width: 60%;
-  padding: 5px 5px 8px 8px;
-  margin-left: 20px;
-  color: #red;
-  background-color: #f7f7f7;
-  font-size: 14px;
+input::-webkit-input-placeholder {
+    color: #999;
 }
 
-.dollarSign {
-  display: inline;
+input::-moz-placeholder {
+    color: #999;
 }
 
-#serviceQual {
-  padding: 13px 13px 20px 20px;
-  margin-left: 20px;
-  font-size: 25px;
+input:-ms-input-placeholder {
+    color: #999;
+}
+
+input:-moz-placeholder {
+    color: #999;
+}
+
+select::-webkit-input-placeholder {
+    color: #999;
+}
+
+select::-moz-placeholder {
+    color: #999;
+}
+
+select:-ms-input-placeholder {
+    color: #999;
+}
+
+select:-moz-placeholder {
+    color: #999;
+}
+
+input:focus {
+    border-bottom: 1px solid #222;
+}
+
+input:focus::-webkit-input-placeholder {
+    color: #222;
+}
+
+input:focus::-moz-placeholder {
+    color: #222;
+}
+
+input:focus:-ms-input-placeholder {
+    color: #222;
+}
+
+input:focus:-moz-placeholder {
+    color: #222;
+}
+
+select:focus {
+    border-bottom: 1px solid #222;
+}
+
+select:focus::-webkit-input-placeholder {
+    color: #222;
+}
+
+select:focus::-moz-placeholder {
+    color: #222;
+}
+
+select:focus:-ms-input-placeholder {
+    color: #222;
+}
+
+select:focus:-moz-placeholder {
+    color: #222;
 }
 
 button {
-  text-transform: uppercase;
-  font-weight: bold;
-  display: block;
-  margin: 30px auto;
-  background: #AD133A;
-  border-radius: 5px;
-  width: 200px;
-  height: 50px;
-  font-size: 17px;
-  color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    margin: 30px auto;
+    background: #AD133A;
+    border-radius: 5px;
+    width: 200px;
+    height: 50px;
+    font-size: 18px;
+    color: white;
 }
 
 button:hover {
-  background: #4c2827;
-  border-bottom-color: #111;
+    background: #4c2827;
+    border-bottom-color: #111;
 }
 
 button:active {
+    position: relative;
+    top: 1px;
+}
+
+.error {
+    color: #ff0000;
+    display: block;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.inputTxtError {
+    border: 1px solid #ff0000;
+    color: #0e0e0e;
+}
+
+.hiddenanswer {
+    display: none;
+}
+
+.answer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    width: 200px;
+    height: 200px;
+    font-size: 36px;
+    background: #f7f7f7;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    margin: 30px auto 0;
+    border-width: 3px 3px 3px 3px;
+    border-style: solid;
+    border-color: #1F030C;
+}
+
+.intermediate{
+  width: 100%;
+  height: 100%;
   position: relative;
-  top: 1px;
 }
 
-#totalTip {
-  font-size: 30px;
-  margin-top: 5px;
-  text-align: center;
+#close {
+    font-size: 16px;
+    font-weight: bold;
+    float: right;
+    display: inline-block;
+    background: #ccc;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    margin: 5px;
+    padding: 3px 3px 6px 3px;
+    color: #000000;
+    cursor: pointer;
 }
 
-#totalTip:before {
-  content: "Tip amount";
-  font-size: 20px;
-  font-weight: bold;
-  display: block;
-  text-transform: uppercase;
+#close:hover {
+    color: #ffffff;
 }
 
-#totalTip sup {
-  font-size: 20px;
-  top: -18px;
-}
-
-#totalTip small {
-  font-size: 20px;
-  font-weight: bold;
-  display: block;
+#likelihood_answer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
