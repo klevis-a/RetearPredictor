@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retear Likelihood Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+        function predict_retear(age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness, fatty_infiltration, likelihood, error_div) {
+            $.post('{{ url_for('retear_likelihood') }}', {
+                age: $(age).val(),
+                gender: $(gender).val(),
+                osteoporosis: $(osteoporosis).val(),
+                work_activity_level: $(work_activity_level).val(),
+                tear_width: $(tear_width).val(),
+                tear_retraction: $(tear_retraction).val(),
+                full_thickness: $(full_thickness).val(),
+                fatty_infiltration: $(fatty_infiltration).val()
+            })
+                .done(function(response) {
+                    $(likelihood).val(response['likelihood'])
+                })
+                .fail(function(xhr, textStatus, textThrown) {
+                    $(error_div).text(Object.values($.parseJSON(xhr.responseText)))
+                })
+        }
+    </script>
+</head>
+<body>
+<div id="container">
+    <h1>Retear Likelihood Calculator</h1>
+    <div id="calculator">
+        <form>
+            <p>Age: <input id="age" type="text" placeholder="76">
+            <p>Gender:
+                <select id="gender">
+                    <option disabled selected value="0">-- Choose an Option --</option>
+                    <option value="1">Female</option>
+                    <option value="2">Male</option>
+                </select>
+            <p>Osteoporosis:
+                <select id="osteoporosis">
+                    <option disabled selected value="0">-- Choose an Option --</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                </select>
+            <p>High Level Work Activity:
+                <select id="work_activity_level">
+                    <option disabled selected value="0">-- Choose an Option --</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                </select>
+            <p>Tear Width (mm): <input id="tear_width" type="text" placeholder="48">
+            <p>Tear Retraction (mm): <input id="tear_retraction" type="text" placeholder="48">
+            <p>Full Thickness:
+                <select id="full_thickness">
+                    <option disabled selected value="0">-- Choose an Option --</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                </select>
+            <p>Goutallier fatty infiltration classification:
+                <select id="fatty_infiltration">
+                    <option disabled selected value="-1">-- Choose an Option --</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            <p>Retear Rate: <input id="likelihood_rate" type="text" placeholder="">
+            <p><button type="button" id="calculate" onclick="predict_retear('#age','#gender','#osteoporosis','#work_activity_level','#tear_width','#tear_retraction','#full_thickness','#fatty_infiltration','#likelihood_rate','#error_div')">Calculate!</button>
+        </form>
+        <p>
+            <div id="error_div"></div>
+        </p>
+    </div>
+</div>
+</body>
+</html>
