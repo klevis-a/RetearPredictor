@@ -1,5 +1,6 @@
 class PredictorObject:
-    def __init__(self, age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness, fatty_infiltration):
+    def __init__(self, age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness,
+                 fatty_infiltration):
         self.age = age
         self.gender = gender
         self.osteoporosis = osteoporosis

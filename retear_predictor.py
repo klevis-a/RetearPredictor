@@ -1,7 +1,6 @@
-import itertools
+from http import HTTPStatus
 from flask import Flask, request, abort, jsonify, render_template
 from marshmallow import ValidationError
-from http import HTTPStatus
 from PredictorSchema import PredictorSchema
 
 app = Flask(__name__)
@@ -16,12 +15,14 @@ def page_not_found(e):
 @app.route('/retearlikelihood', methods=['POST'])
 def retear_likelihood():
     try:
-        data = predictorSchema.load(request.form)
+        predictor_data = predictorSchema.load(request.form)
     except ValidationError as err:
         abort(HTTPStatus.BAD_REQUEST.value, err.messages)
 
-    return jsonify({
-        'likelihood': data.age + data.gender + data.osteoporosis + data.work_activity_level + data.tear_width + data.tear_retraction + data.full_thickness + data.fatty_infiltration})
+    return jsonify(
+        {'likelihood': predictor_data.age + predictor_data.gender + predictor_data.osteoporosis +
+                      predictor_data.work_activity_level + predictor_data.tear_width + predictor_data.tear_retraction +
+                      predictor_data.full_thickness + predictor_data.fatty_infiltration})
 
 
 @app.route('/')
