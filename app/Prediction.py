@@ -1,7 +1,25 @@
 import math
+import datetime
+from app import db
 
 
-class PredictorObject:
+class Prediction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    age = db.Column(db.Float)
+    osteoporosis = db.Column(db.Boolean)
+    work_activity_level = db.Column(db.Boolean)
+    tear_width = db.Column(db.Float)
+    tear_retraction = db.Column(db.Float)
+    full_thickness = db.Column(db.Boolean)
+    fatty_infiltration = db.Column(db.Integer)
+    ip_address = db.Column(db.String(length=15))
+    date = db.Column(db.DateTime)
+    diebold_likelihood = db.Column(db.Float)
+    kwon_likelihood = db.Column(db.Float)
+    utah_likelihood = db.Column(db.Float)
+    keener_likelihood = db.Column(db.Float)
+    combined_likelihood = db.Column(db.Float)
+
     def __init__(self, age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness,
                  fatty_infiltration):
         self.age = age
@@ -12,15 +30,21 @@ class PredictorObject:
         self.tear_retraction = tear_retraction
         self.full_thickness = full_thickness
         self.fatty_infiltration = fatty_infiltration
+        self._predict_retear_rate()
 
-    def predict_retear_rate(self):
-        diebold_likelihood, diebold_sample_size = self._diebold_prediction()
-        kwon_likelihood, kwon_sample_size = self._kwon_prediction()
-        utah_likelihood, utah_sample_size = self._utah_prediction()
-        keener_likelihood, keener_sample_size = self._keener_prediction()
-        return (diebold_likelihood * diebold_sample_size + kwon_likelihood * kwon_sample_size +
-                utah_likelihood * utah_sample_size + keener_likelihood * keener_sample_size) / \
-               (diebold_sample_size + kwon_sample_size + utah_sample_size + keener_sample_size)
+    def append_stamp(self, ip_address):
+        self.ip_address = ip_address
+        self.date = datetime.datetime.now()
+
+    def _predict_retear_rate(self):
+        self.diebold_likelihood, diebold_sample_size = self._diebold_prediction()
+        self.kwon_likelihood, kwon_sample_size = self._kwon_prediction()
+        self.utah_likelihood, utah_sample_size = self._utah_prediction()
+        self.keener_likelihood, keener_sample_size = self._keener_prediction()
+        self.combined_likelihood = (self.diebold_likelihood * diebold_sample_size +
+                                    self.kwon_likelihood * kwon_sample_size + self.utah_likelihood * utah_sample_size +
+                                    self.keener_likelihood * keener_sample_size) / \
+                                   (diebold_sample_size + kwon_sample_size + utah_sample_size + keener_sample_size)
 
     def _tear_area(self):
         return self.tear_width * self.tear_retraction

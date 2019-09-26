@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, validate, post_load
-from PredictorObject import PredictorObject
+from app.Prediction import Prediction
 
 
 class PredictorSchemaErrors:
@@ -69,4 +69,4 @@ class PredictorSchema(Schema):
 
     @post_load
     def make_predictor(self, data, **kwargs):
-        return PredictorObject(**data)
+        return Prediction(**data)

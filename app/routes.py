@@ -1,9 +1,10 @@
 from http import HTTPStatus
-from flask import Flask, request, abort, jsonify, render_template
+from flask import request, abort, jsonify, render_template
+from app import app
+from app import db
 from marshmallow import ValidationError
-from PredictorSchema import PredictorSchema
+from app.PredictorSchema import PredictorSchema
 
-app = Flask(__name__)
 predictorSchema = PredictorSchema()
 
 
@@ -19,15 +20,13 @@ def retear_likelihood():
     except ValidationError as err:
         abort(HTTPStatus.BAD_REQUEST.value, err.messages)
 
+    predictor_data.append_stamp(request.remote_addr)
+    db.session.add(predictor_data)
+    db.session.commit()
     return jsonify(
-        {'likelihood': predictor_data.predict_retear_rate()})
+        {'likelihood': predictor_data.combined_likelihood})
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-# We only need this for local development.
-if __name__ == '__main__':
-    app.run()
