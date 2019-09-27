@@ -9,5 +9,3 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + os.environ['DB_USER
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
-from app import routes
