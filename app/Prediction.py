@@ -6,6 +6,7 @@ from app import db
 class Prediction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     age = db.Column(db.Float)
+    gender = db.Column(db.Boolean)
     osteoporosis = db.Column(db.Boolean)
     work_activity_level = db.Column(db.Boolean)
     tear_width = db.Column(db.Float)
@@ -21,7 +22,8 @@ class Prediction(db.Model):
     combined_likelihood = db.Column(db.Float)
 
     def __init__(self, age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness,
-                 fatty_infiltration):
+                 fatty_infiltration, ip_address='', date=datetime.datetime.now(), diebold_likelihood=0.0,
+                 kwon_likelihood=0.0, utah_likelihood=0.0, keener_likelihood=0.0, combined_likelihood=0.0):
         self.age = age
         self.gender = gender
         self.osteoporosis = osteoporosis
@@ -30,6 +32,13 @@ class Prediction(db.Model):
         self.tear_retraction = tear_retraction
         self.full_thickness = full_thickness
         self.fatty_infiltration = fatty_infiltration
+        self.ip_address = ip_address
+        self.date = date
+        self.diebold_likelihood = diebold_likelihood
+        self.kwon_likelihood = kwon_likelihood
+        self.utah_likelihood = utah_likelihood
+        self.keener_likelihood = keener_likelihood
+        self.combined_likelihood = combined_likelihood
         self._predict_retear_rate()
 
     def append_stamp(self, ip_address):

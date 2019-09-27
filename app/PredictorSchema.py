@@ -67,6 +67,14 @@ class PredictorSchema(Schema):
                                             [('required', PredictorSchemaErrors.FATTY_INFILTRATION_REQUIRED_ERROR),
                                              ('invalid', PredictorSchemaErrors.FATTY_INFILTRATION_INVALID_ERROR)]))
 
+    ip_address = fields.String()
+    date = fields.DateTime()
+    diebold_likelihood = fields.Float()
+    kwon_likelihood = fields.Float()
+    utah_likelihood = fields.Float()
+    keener_likelihood = fields.Float()
+    combined_likelihood = fields.Float()
+
     @post_load
     def make_predictor(self, data, **kwargs):
         return Prediction(**data)

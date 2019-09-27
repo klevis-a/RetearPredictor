@@ -1,0 +1,26 @@
+.rTable {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rTableRow {
+    width: 100%;
+    display: table-row;
+    border-bottom: 2px solid #000000;
+}
+
+.rTableCell {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 5px 5px 5px 5px;
+    text-align: center;
+}
+
+.rTableHead {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 5px 5px 5px 5px;
+    font-weight: bold;
+    text-align: center;
+}

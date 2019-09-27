@@ -4,6 +4,7 @@ from app import app
 from app import db
 from marshmallow import ValidationError
 from app.PredictorSchema import PredictorSchema
+from app.Prediction import Prediction
 
 predictorSchema = PredictorSchema()
 
@@ -25,6 +26,12 @@ def retear_likelihood():
     db.session.commit()
     return jsonify(
         {'likelihood': predictor_data.combined_likelihood})
+
+
+@app.route('/viewpredictions')
+def view_predictions():
+    predictions = Prediction.query.all()
+    return render_template('viewpredictions.html', predictions=predictions)
 
 
 @app.route('/')
