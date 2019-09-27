@@ -20,7 +20,7 @@
                 fatty_infiltration: $(fatty_infiltration).val()
             })
                 .done(function(response) {
-                    $(answer).text(Math.round(response['likelihood']*100) + '%')
+                    $(answer).text(Math.round(response['likelihood']*100) + '% rate of retear')
                     $(answer_div).removeClass('hiddenanswer');
                 })
                 .fail(function(xhr, textStatus, textThrown) {
