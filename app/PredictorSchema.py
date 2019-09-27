@@ -25,8 +25,7 @@ class PredictorSchemaErrors:
     FULL_THICKNESS_INVALID_ERROR = 'Please select Yes or No in the Full Thickness Tear field.'
 
     FATTY_INFILTRATION_REQUIRED_ERROR = 'Please select a Goutallier fatty infiltration classification.'
-    FATTY_INFILTRATION_INVALID_ERROR = 'Please select a Goutallier fatty infiltration classification between 0 and 4 ' \
-                                       '(inclusive). '
+    FATTY_INFILTRATION_INVALID_ERROR = 'Please select a Goutallier fatty infiltration classification <2 or >=2.'
 
 
 class PredictorSchema(Schema):
@@ -62,7 +61,7 @@ class PredictorSchema(Schema):
                                         [('required', PredictorSchemaErrors.FULL_THICKNESS_REQUIRED_ERROR),
                                          ('invalid', PredictorSchemaErrors.FULL_THICKNESS_INVALID_ERROR)]))
 
-    fatty_infiltration = fields.Integer(validate=validate.OneOf((0, 1, 2, 3, 4)), required=True,
+    fatty_infiltration = fields.Integer(validate=validate.OneOf((0, 1)), required=True,
                                         error_messages=dict(
                                             [('required', PredictorSchemaErrors.FATTY_INFILTRATION_REQUIRED_ERROR),
                                              ('invalid', PredictorSchemaErrors.FATTY_INFILTRATION_INVALID_ERROR)]))

@@ -12,7 +12,7 @@ class Prediction(db.Model):
     tear_width = db.Column(db.Float)
     tear_retraction = db.Column(db.Float)
     full_thickness = db.Column(db.Boolean)
-    fatty_infiltration = db.Column(db.Integer)
+    fatty_infiltration = db.Column(db.Boolean)
     ip_address = db.Column(db.String(length=15))
     date = db.Column(db.DateTime)
     diebold_likelihood = db.Column(db.Float)
@@ -74,7 +74,7 @@ class Prediction(db.Model):
 
     def _kwon_prediction(self):
         score = self.work_activity_level * 2 + self.osteoporosis * 2 + (self.tear_width > 25) * 2 \
-                + (self.age > 70) * 2 + (self.fatty_infiltration >= 2) * 3 + self._kwon_retraction_score()
+                + (self.age > 70) * 2 + self.fatty_infiltration * 3 + self._kwon_retraction_score()
         return -0.0006 * score ** 3 + 0.0131 * score ** 2 + 0.009 * score, 603
 
     def _utah_prediction(self):
