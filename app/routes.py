@@ -4,6 +4,8 @@ import boto3
 import os
 from marshmallow import ValidationError
 import time
+import geoip2.database
+from flask_googlemaps import Map
 from app import app
 from app import db
 from app import field_names
@@ -54,6 +56,38 @@ def spreadsheet_export():
                                                   Params={'Bucket': os.environ['S3_EXPORT_BUCKET'], 'Key': file_path},
                                                   ExpiresIn=300)
     return redirect(export_url, 302)
+
+
+@app.route('/map')
+def create_map():
+    reader = geoip2.database.Reader(os.environ['MMDB_PATH'])
+    predictions = Prediction.query.all()
+    markers = []
+    for prediction in predictions:
+        if prediction.combined_likelihood < 0.3:
+            marker_icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+        elif prediction.combined_likelihood < 0.7:
+            marker_icon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
+        else:
+            marker_icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+        reader_response = reader.city(prediction.ip_address)
+        infobox = '<div class="gmaps_class">' + str(int(prediction.combined_likelihood)) + '</div'
+        markers.append({
+            'icon': marker_icon,
+            'lat': reader_response.location.latitude,
+            'lng': reader_response.location.longitude,
+            'infobox': infobox
+        })
+
+    predictions_map = Map(
+        identifier='predictions_map',
+        lat=40.7649368,
+        lng=-111.8421021,
+        markers=markers,
+        fit_markers_to_bounds=True
+    )
+
+    return render_template('map.html', predictions_map=predictions_map)
 
 
 @app.route('/')

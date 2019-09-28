@@ -1,13 +1,16 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
+from flask_googlemaps import GoogleMaps
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + os.environ['DB_USER'] + ':' + os.environ['DB_PASS'] + \
                                         '@' + os.environ['DB_HOST'] + ':' + os.environ['DB_PORT'] + \
                                         '/' + os.environ['DB_NAME']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['GOOGLEMAPS_KEY'] = os.environ['GOOGLEMAPS_KEY']
 db = SQLAlchemy(app)
+GoogleMaps(app)
 
 field_names = {
     'date': 'Date/Time',
