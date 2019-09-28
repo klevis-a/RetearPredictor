@@ -8,39 +8,15 @@
 <body>
 <div class="rTable">
     <div class="rTableRow">
-        <div class="rTableHead">Date/Time</div>
-        <div class="rTableHead">IP Address</div>
-        <div class="rTableHead">Age</div>
-        <div class="rTableHead">Gender</div>
-        <div class="rTableHead">Osteoporosis</div>
-        <div class="rTableHead">High Level Work Activity</div>
-        <div class="rTableHead">Tear Width (mm)</div>
-        <div class="rTableHead">Tear Retraction (mm)</div>
-        <div class="rTableHead">Full Thickness Tear</div>
-        <div class="rTableHead">Goutallier Classification</div>
-        <div class="rTableHead">Diebold Likelihood</div>
-        <div class="rTableHead">Kwon Likelihood</div>
-        <div class="rTableHead">Utah Likelihood</div>
-        <div class="rTableHead">Keener Likelihood</div>
-        <div class="rTableHead">Combined Likelihood</div>
+        {%  for friendly_name in friendly_names %}
+        <div class="rTableHead">{{ friendly_name }}</div>
+        {%  endfor %}
     </div>
     {%  for prediction in predictions %}
     <div class="rTableRow">
-            <div class="rTableCell">{{ prediction.date }}</div>
-            <div class="rTableCell">{{ prediction.ip_address }}</div>
-            <div class="rTableCell">{{ prediction.age }}</div>
-            <div class="rTableCell">{{ prediction.gender }}</div>
-            <div class="rTableCell">{{ prediction.osteoporosis }}</div>
-            <div class="rTableCell">{{ prediction.work_activity_level }}</div>
-            <div class="rTableCell">{{ prediction.tear_width }}</div>
-            <div class="rTableCell">{{ prediction.tear_retraction }}</div>
-            <div class="rTableCell">{{ prediction.full_thickness }}</div>
-            <div class="rTableCell">{{ prediction.fatty_infiltration }}</div>
-            <div class="rTableCell">{{ prediction.diebold_likelihood }}</div>
-            <div class="rTableCell">{{ prediction.kwon_likelihood }}</div>
-            <div class="rTableCell">{{ prediction.utah_likelihood }}</div>
-            <div class="rTableCell">{{ prediction.keener_likelihood }}</div>
-            <div class="rTableCell">{{ prediction.combined_likelihood }}</div>
+            {%  for name in names %}
+            <div class="rTableCell">{{ prediction[name] }}</div>
+            {%  endfor %}
     </div>
     {%  endfor %}
 </div>

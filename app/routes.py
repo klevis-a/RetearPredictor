@@ -1,10 +1,15 @@
 from http import HTTPStatus
 from flask import request, abort, jsonify, render_template
+import boto3
+import os
+from marshmallow import ValidationError
+import time
 from app import app
 from app import db
-from marshmallow import ValidationError
+from app import field_names
 from app.PredictorSchema import PredictorSchema
 from app.Prediction import Prediction
+from app import SpreadsheetExport
 
 predictorSchema = PredictorSchema()
 
@@ -31,7 +36,19 @@ def retear_likelihood():
 @app.route('/viewpredictions')
 def view_predictions():
     predictions = Prediction.query.all()
-    return render_template('viewpredictions.html', predictions=predictions)
+    return render_template('viewpredictions.html', predictions=predictions, names=field_names.keys(), friendly_names=field_names.values())
+
+
+@app.route('/spreadsheet')
+def spreadsheet_export():
+    predictions = Prediction.query.all()
+    serializer = PredictorSchema(many=True)
+    result = serializer.dump(predictions)
+    csv_export = SpreadsheetExport.write_csv(result, field_names.keys(), field_names.values())
+    file_path = 'csv_exports/' + 'exportedPredictions_' + str(int(time.time())) + '.csv'
+    s3 = boto3.resource('s3')
+    s3.Bucket(os.environ['S3_EXPORT_BUCKET']).put_object(Key=file_path, Body=csv_export)
+    return render_template('spreadsheet.html')
 
 
 @app.route('/')
