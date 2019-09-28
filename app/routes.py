@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from flask import request, abort, jsonify, render_template
+from flask import request, abort, jsonify, render_template, redirect
 import boto3
 import os
 from marshmallow import ValidationError
@@ -36,7 +36,8 @@ def retear_likelihood():
 @app.route('/viewpredictions')
 def view_predictions():
     predictions = Prediction.query.all()
-    return render_template('viewpredictions.html', predictions=predictions, names=field_names.keys(), friendly_names=field_names.values())
+    return render_template('viewpredictions.html', predictions=predictions, names=field_names.keys(),
+                           friendly_names=field_names.values())
 
 
 @app.route('/spreadsheet')
@@ -46,9 +47,13 @@ def spreadsheet_export():
     result = serializer.dump(predictions)
     csv_export = SpreadsheetExport.write_csv(result, field_names.keys(), field_names.values())
     file_path = 'csv_exports/' + 'exportedPredictions_' + str(int(time.time())) + '.csv'
-    s3 = boto3.resource('s3')
-    s3.Bucket(os.environ['S3_EXPORT_BUCKET']).put_object(Key=file_path, Body=csv_export)
-    return render_template('spreadsheet.html')
+    s3_resource = boto3.resource('s3')
+    s3_resource.Bucket(os.environ['S3_EXPORT_BUCKET']).put_object(Key=file_path, Body=csv_export)
+    s3_client = boto3.client('s3')
+    export_url = s3_client.generate_presigned_url('get_object',
+                                                  Params={'Bucket': os.environ['S3_EXPORT_BUCKET'], 'Key': file_path},
+                                                  ExpiresIn=300)
+    return redirect(export_url, 302)
 
 
 @app.route('/')
