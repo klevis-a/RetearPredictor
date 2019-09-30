@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>
+            $(document).ready(function() {
+                $("#bib_div").css({'width': ($("#calculator").width() + 'px')});
+            });
         function predict_retear(age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness, fatty_infiltration, answer, answer_div) {
             resetErrors()
             $.post('{{ url_for('retear_likelihood') }}', {
@@ -145,6 +148,22 @@
             <span id="close" onclick="hideDiv('#answer_div')">x</span>
         </div>
     </div>
+</div>
+<div class="bib_div" id="bib_div">
+    Provided predictions are based on analysis of >2500 patients spanning the following studies:
+    <ul>
+        <li>Diebold G, Lam P, Walton J, Murrell GAC. Relationship Between Age and Rotator Cuff Retear: A Study of 1,600 Consecutive Rotator Cuff Repairs. J Bone Joint Surg Am. 2017;99(14):1198-1205. doi:<a href="http://dx.doi.org/10.2106/JBJS.16.00770">10.2106/JBJS.16.00770</a>.</li>
+        <li>Kwon J, Kim SH, Lee YH, Kim TI, Oh JH. The Rotator Cuff Healing Index: A New Scoring System to Predict Rotator Cuff Healing After Surgical Repair. Am J Sports Med. 2018;103(6):036354651881076-036354651881078. doi:<a href="http://dx.doi.org/10.1177/0363546518810763">10.1177/0363546518810763</a>.</li>
+        <li>Keener JD, Galatz LM, Stobbs-Cucchi G, Patton R, Yamaguchi K. Rehabilitation following arthroscopic rotator cuff repair: a prospective randomized trial of immobilization compared with early motion. J Bone Joint Surg. 2014;96(1):11-9.</li>
+        <li>
+            Unpublished analysis of data from the University of Utah encompassing the following studies:
+            <ul>
+                <li>Tashjian, R., Granger, E., Zhang, Y., Teerlink, C., Cannon-Albright, L. (2016). Identification of a genetic variant associated with rotator cuff repair healing. Journal of Shoulder and Elbow Surgery  25(6), 865 872. <a href="https://dx.doi.org/10.1016/j.jse.2016.02.019">https://dx.doi.org/10.1016/j.jse.2016.02.019</a></li>
+                <li>Tashjian, R., Erickson, G., Robins, R., Zhang, Y., Burks, R., Greis, P. (2017). Influence of Preoperative Musculotendinous Junction Position on Rotator Cuff Healing After Double-Row Repair Arthroscopy: The Journal of Arthroscopic & Related Surgery  33(6), 1159-1166. <a href="https://dx.doi.org/10.1016/j.arthro.2016.12.010">https://dx.doi.org/10.1016/j.arthro.2016.12.010</a></li>
+                <li>Tashjian, R., Granger, E., Chalmers, P. (2018). Healing Rates and Functional Outcomes After Triple-Loaded Single-Row Versus Transosseous-Equivalent Double-Row Rotator Cuff Tendon Repair Orthopaedic Journal of Sports Medicine  6(11), 2325967118805365. <a href="https://dx.doi.org/10.1177/2325967118805365">https://dx.doi.org/10.1177/2325967118805365</a></li>
+            </ul>
+        </li>
+    </ul>
 </div>
 </body>
 </html>
