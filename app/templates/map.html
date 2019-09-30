@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Map for Predictions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapstyle.css') }}">
     {{predictions_map.js}}
 </head>
 <body>
-{{predictions_map.html}}
+<div id="container">
+    {{predictions_map.html}}
+</div>
 </body>
 </html>
