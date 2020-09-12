@@ -1,29 +1,120 @@
+import os
 import math
 import datetime
-from app import db
+import uuid
+from marshmallow import Schema, fields, validate
+from pynamodb.models import Model
+from pynamodb.attributes import UnicodeAttribute, NumberAttribute, BooleanAttribute, UTCDateTimeAttribute
 
 
-class Prediction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    age = db.Column(db.Float)
-    gender = db.Column(db.Boolean)
-    osteoporosis = db.Column(db.Boolean)
-    work_activity_level = db.Column(db.Boolean)
-    tear_width = db.Column(db.Float)
-    tear_retraction = db.Column(db.Float)
-    full_thickness = db.Column(db.Boolean)
-    fatty_infiltration = db.Column(db.Boolean)
-    ip_address = db.Column(db.String(length=15))
-    date = db.Column(db.DateTime)
-    diebold_likelihood = db.Column(db.Float)
-    kwon_likelihood = db.Column(db.Float)
-    utah_likelihood = db.Column(db.Float)
-    keener_likelihood = db.Column(db.Float)
-    combined_likelihood = db.Column(db.Float)
+class PredictionSchema(Schema):
+    AGE_REQUIRED_ERROR = 'Please enter age of patient.'
+    AGE_INVALID_ERROR = 'Age of patient must be between 19 and 90.'
 
+    GENDER_REQUIRED_ERROR = 'Please select gender of patient.'
+    GENDER_INVALID_ERROR = 'Please select male or female for gender of patient.'
+
+    OSTEOPOROSIS_REQUIRED_ERROR = 'Please select whether the patient has osteroporosis or not.'
+    OSTEOPOROSIS_INVALID_ERROR = 'Please select Yes or No in the Osteroporosis field.'
+
+    WORK_ACTIVITY_REQUIRED_ERROR = 'Please select the work activity level for the patient.'
+    WORK_ACTIVITY_INVALID_ERROR = 'Please select Yes or No in the High Level of Work Activity field.'
+
+    TEAR_WIDTH_REQUIRED_ERROR = 'Please enter a tear width.'
+    TEAR_WIDTH_INVALID_ERROR = 'Tear width must be between 0 and 60 mm.'
+
+    TEAR_RETRACTION_REQUIRED_ERROR = 'Please enter a tear retraction.'
+    TEAR_RETRACTION_INVALID_ERROR = 'Tear retraction must be between 0 and 60 mm.'
+
+    FULL_THICKNESS_REQUIRED_ERROR = 'Please select whether this is a full thickness tear or not.'
+    FULL_THICKNESS_INVALID_ERROR = 'Please select Yes or No in the Full Thickness Tear field.'
+
+    FATTY_INFILTRATION_REQUIRED_ERROR = 'Please select a Goutallier fatty infiltration classification.'
+    FATTY_INFILTRATION_INVALID_ERROR = 'Please select a Goutallier fatty infiltration classification <2 or >=2.'
+
+    age = fields.Float(validate=validate.Range(min=19.0, max=90.0), required=True,
+                       error_messages=dict([('required', AGE_REQUIRED_ERROR),
+                                            ('invalid', AGE_INVALID_ERROR)]))
+
+    gender = fields.Integer(validate=validate.OneOf((0, 1)), required=True,
+                            error_messages=dict([('required', GENDER_REQUIRED_ERROR),
+                                                 ('invalid', GENDER_INVALID_ERROR)]))
+
+    osteoporosis = fields.Integer(validate=validate.OneOf((0, 1)), required=True,
+                                  error_messages=dict(
+                                      [('required', OSTEOPOROSIS_REQUIRED_ERROR),
+                                       ('invalid', OSTEOPOROSIS_INVALID_ERROR)]))
+
+    work_activity_level = fields.Integer(validate=validate.OneOf((0, 1)), required=True,
+                                         error_messages=dict(
+                                             [('required', WORK_ACTIVITY_REQUIRED_ERROR),
+                                              ('invalid', WORK_ACTIVITY_INVALID_ERROR)]))
+
+    tear_width = fields.Float(validate=validate.Range(min=0.0, max=60.0), required=True,
+                              error_messages=dict([('required', TEAR_WIDTH_REQUIRED_ERROR),
+                                                   ('invalid', TEAR_WIDTH_INVALID_ERROR)]))
+
+    tear_retraction = fields.Float(validate=validate.Range(min=0.0, max=60.0), required=True,
+                                   error_messages=dict(
+                                       [('required', TEAR_RETRACTION_REQUIRED_ERROR),
+                                        ('invalid', TEAR_RETRACTION_INVALID_ERROR)]))
+
+    full_thickness = fields.Integer(validate=validate.OneOf((0, 1)), required=True,
+                                    error_messages=dict(
+                                        [('required', FULL_THICKNESS_REQUIRED_ERROR),
+                                         ('invalid', FULL_THICKNESS_INVALID_ERROR)]))
+
+    fatty_infiltration = fields.Integer(validate=validate.OneOf((0, 1)), required=True,
+                                        error_messages=dict(
+                                            [('required', FATTY_INFILTRATION_REQUIRED_ERROR),
+                                             ('invalid', FATTY_INFILTRATION_INVALID_ERROR)]))
+
+    id = fields.String()
+    ip_address = fields.String()
+    date = fields.DateTime()
+    diebold_likelihood = fields.Float()
+    kwon_likelihood = fields.Float()
+    utah_likelihood = fields.Float()
+    keener_likelihood = fields.Float()
+    combined_likelihood = fields.Float()
+
+
+class PredictionModel(Model):
+    class Meta:
+        table_name = os.environ['DYNAMO_TABLE_NAME']
+        region = os.environ['DYNAMO_REGION']
+        write_capacity_units = os.environ['DYNAMO_WCU']
+        read_capacity_units = os.environ['DYNAMO_RCU']
+
+    id = UnicodeAttribute()
+    age = NumberAttribute()
+    gender = BooleanAttribute()
+    osteoporosis = BooleanAttribute()
+    work_activity_level = BooleanAttribute()
+    tear_width = NumberAttribute()
+    tear_retraction = NumberAttribute()
+    full_thickness = BooleanAttribute()
+    fatty_infiltration = BooleanAttribute()
+    ip_address = UnicodeAttribute()
+    date = UTCDateTimeAttribute()
+    diebold_likelihood = NumberAttribute()
+    kwon_likelihood = NumberAttribute()
+    utah_likelihood = NumberAttribute()
+    keener_likelihood = NumberAttribute()
+    combined_likelihood = NumberAttribute()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def mint(self, ip_address):
+        self.id = str(uuid.uuid4())
+        self.ip_address = ip_address
+        self.date = datetime.datetime.now()
+
+
+class Prediction:
     def __init__(self, age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness,
-                 fatty_infiltration, ip_address='', date=datetime.datetime.now(), diebold_likelihood=0.0,
-                 kwon_likelihood=0.0, utah_likelihood=0.0, keener_likelihood=0.0, combined_likelihood=0.0):
+                 fatty_infiltration):
         self.age = age
         self.gender = gender
         self.osteoporosis = osteoporosis
@@ -32,18 +123,7 @@ class Prediction(db.Model):
         self.tear_retraction = tear_retraction
         self.full_thickness = full_thickness
         self.fatty_infiltration = fatty_infiltration
-        self.ip_address = ip_address
-        self.date = date
-        self.diebold_likelihood = diebold_likelihood
-        self.kwon_likelihood = kwon_likelihood
-        self.utah_likelihood = utah_likelihood
-        self.keener_likelihood = keener_likelihood
-        self.combined_likelihood = combined_likelihood
         self._predict_retear_rate()
-
-    def append_stamp(self, ip_address):
-        self.ip_address = ip_address
-        self.date = datetime.datetime.now()
 
     def _predict_retear_rate(self):
         self.diebold_likelihood, diebold_sample_size = self._diebold_prediction()

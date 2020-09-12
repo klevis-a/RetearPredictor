@@ -2,19 +2,12 @@ from http import HTTPStatus
 from flask import request, abort, jsonify, render_template, redirect
 import boto3
 import os
-import io
 from marshmallow import ValidationError
 import time
 import geoip2.database
 from flask_googlemaps import Map
-from app import app
-from app import db
-from app import field_names
-from app.PredictorSchema import PredictorSchema
-from app.Prediction import Prediction
-from app import SpreadsheetExport
-
-predictorSchema = PredictorSchema()
+from app import app, field_names, SpreadsheetExport
+from app.Prediction import Prediction, PredictionModel, PredictionSchema
 
 
 @app.errorhandler(HTTPStatus.BAD_REQUEST.value)
@@ -24,29 +17,32 @@ def page_not_found(e):
 
 @app.route('/retearlikelihood', methods=['POST'])
 def retear_likelihood():
+    predictor_data = None
     try:
-        predictor_data = predictorSchema.load(request.form)
+        predictor_schema = PredictionSchema()
+        predictor_data = predictor_schema.load(request.form)
     except ValidationError as err:
         abort(HTTPStatus.BAD_REQUEST.value, err.messages)
 
-    predictor_data.append_stamp(request.remote_addr)
-    db.session.add(predictor_data)
-    db.session.commit()
+    prediction = Prediction(**predictor_data)
+    prediction_model = PredictionModel(**vars(prediction))
+    prediction_model.mint(request.remote_addr)
+    prediction_model.save()
     return jsonify(
-        {'likelihood': predictor_data.combined_likelihood})
+        {'likelihood': prediction_model.combined_likelihood})
 
 
 @app.route('/viewpredictions')
 def view_predictions():
-    predictions = Prediction.query.all()
+    predictions = PredictionModel.scan()
     return render_template('viewpredictions.html', predictions=predictions, names=field_names.keys(),
                            friendly_names=field_names.values())
 
 
 @app.route('/spreadsheet')
 def spreadsheet_export():
-    predictions = Prediction.query.all()
-    serializer = PredictorSchema(many=True)
+    predictions = PredictionModel.scan()
+    serializer = PredictionSchema(many=True)
     result = serializer.dump(predictions)
     csv_export = SpreadsheetExport.write_csv(result, field_names.keys(), field_names.values())
     file_path = 'csv_exports/' + 'exportedPredictions_' + str(int(time.time())) + '.csv'
@@ -73,7 +69,7 @@ def create_map():
             bucket.download_file(os.environ['MMDB_PATH_S3'], mmdb_file_fullpath)
         reader = geoip2.database.Reader(mmdb_file_fullpath)
 
-    predictions = Prediction.query.all()
+    predictions = PredictionModel.scan()
     markers = []
     for prediction in predictions:
         if prediction.combined_likelihood < 0.3:

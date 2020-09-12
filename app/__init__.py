@@ -13,6 +13,7 @@ db = SQLAlchemy(app)
 GoogleMaps(app)
 
 field_names = {
+    'id': 'UUID',
     'date': 'Date/Time',
     'ip_address': 'IP Address',
     'age': 'Age',
