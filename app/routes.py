@@ -57,7 +57,7 @@ def spreadsheet_export():
 
 @app.route('/map')
 def create_map():
-    if os.environ['MMDB_PATH_LOCAL'].strip():
+    if 'MMDB_PATH_LOCAL' in os.environ:
         reader = geoip2.database.Reader(os.environ['MMDB_PATH_LOCAL'])
     else:
         s3_path_split = os.environ['MMDB_PATH_S3'].split('/')

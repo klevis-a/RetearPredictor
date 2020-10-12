@@ -1,6 +1,7 @@
 from flask import Flask
 import os
 from flask_googlemaps import GoogleMaps
+from app.Prediction import PredictionModel
 
 app = Flask(__name__)
 app.config['GOOGLEMAPS_KEY'] = os.environ['GOOGLEMAPS_KEY']
@@ -24,3 +25,7 @@ field_names = {
     'keener_likelihood': 'Keener Likelihood',
     'combined_likelihood': 'Combined Likelihood'
 }
+
+# this allows local testing
+if 'DYNAMO_HOST' in os.environ:
+    PredictionModel.Meta.host = os.environ['DYNAMO_HOST']
