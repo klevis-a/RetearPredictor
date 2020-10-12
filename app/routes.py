@@ -17,6 +17,7 @@ def page_not_found(e):
 
 @app.route('/retearlikelihood', methods=['POST'])
 def retear_likelihood():
+    # validate the input
     predictor_data = None
     try:
         predictor_schema = PredictionSchema()
@@ -24,8 +25,12 @@ def retear_likelihood():
     except ValidationError as err:
         abort(HTTPStatus.BAD_REQUEST.value, err.messages)
 
+    # create a prediction
     prediction = Prediction(**predictor_data)
+
+    # save it to the database
     prediction_model = PredictionModel(**vars(prediction))
+    # the user supplied data doesn't have a unique ID, an IP address, or a timestamp - that is what mint does
     prediction_model.mint(request.remote_addr)
     prediction_model.save()
     return jsonify(
@@ -34,6 +39,7 @@ def retear_likelihood():
 
 @app.route('/viewpredictions')
 def view_predictions():
+    # read the database and create a summary page
     predictions = PredictionModel.scan()
     return render_template('viewpredictions.html', predictions=predictions, names=field_names.keys(),
                            friendly_names=field_names.values())
@@ -41,14 +47,18 @@ def view_predictions():
 
 @app.route('/spreadsheet')
 def spreadsheet_export():
+    # this is just a simple way to get a json representation of the database
+    # the json representation returns a list of dictionaries - which is then very easy to write to CSV
     predictions = PredictionModel.scan()
     serializer = PredictionSchema(many=True)
     result = serializer.dump(predictions)
     csv_export = SpreadsheetExport.write_csv(result, field_names.keys(), field_names.values())
+    # store the generated CSV file to the specified S3 bucket
     file_path = 'csv_exports/' + 'exportedPredictions_' + str(int(time.time())) + '.csv'
     s3_resource = boto3.resource('s3')
     s3_resource.Bucket(os.environ['S3_BUCKET']).put_object(Key=file_path, Body=csv_export)
     s3_client = boto3.client('s3')
+    # generate a URL for the file that expires in 5 minutes
     export_url = s3_client.generate_presigned_url('get_object',
                                                   Params={'Bucket': os.environ['S3_BUCKET'], 'Key': file_path},
                                                   ExpiresIn=300)
@@ -60,6 +70,9 @@ def create_map():
     if 'MMDB_PATH_LOCAL' in os.environ:
         reader = geoip2.database.Reader(os.environ['MMDB_PATH_LOCAL'])
     else:
+        # this app is designed to run as on AWS lambda, where local storage is not persistent
+        # so first we check whether the temporary directory for the lambda app already has the geo IP database
+        # if not, then download it from S3
         s3_path_split = os.environ['MMDB_PATH_S3'].split('/')
         mmdb_file_name = s3_path_split[-1]
         mmdb_file_fullpath = os.path.join(os.environ['TMP_DIR'], mmdb_file_name)

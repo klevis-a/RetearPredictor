@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>
-            $(document).ready(function() {
-                $("#bib_div").css({'width': ($("#calculator").width() + 'px')});
-            });
+
+        $(document).ready(function() {
+            $("#bib_div").css({'width': ($("#calculator").width() + 'px')});
+        });
+
         function predict_retear(age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness, fatty_infiltration, answer, answer_div) {
             resetErrors()
             $.post('{{ url_for('retear_likelihood') }}', {
@@ -22,23 +24,25 @@
                 full_thickness: $(full_thickness).val(),
                 fatty_infiltration: $(fatty_infiltration).val()
             })
-                .done(function(response) {
-                    $(answer).text(Math.round(response['likelihood']*100) + '% rate of retear')
-                    $(answer_div).removeClass('hiddenanswer');
-                })
-                .fail(function(xhr, textStatus, textThrown) {
-                    $.each($.parseJSON(xhr.responseText), function(k,v)
+            .done(function(response) {
+                $(answer).text(Math.round(response['likelihood']*100) + '% rate of retear')
+                $(answer_div).removeClass('hiddenanswer');
+            })
+            .fail(function(xhr, textStatus, textThrown) {
+                $.each($.parseJSON(xhr.responseText), function(k,v)
                     {
                         console.log(k + " => " + v[0]);
-                        var msg = '<label class="error" for="'+ k +'">'+ v[0] +'</label>';
+                        const msg = '<label class="error" for="'+ k +'">'+ v[0] +'</label>';
                         $('input[id="' + k + '"], select[id="' + k + '"]').addClass('inputTxtError').after(msg);
                     })
-                })
+            })
         }
+
         function resetErrors() {
             $('form input, form select').removeClass('inputTxtError');
             $('label.error').remove();
         }
+
         function hideDiv(divId) {
             $(divId).addClass('hiddenanswer')
         }
@@ -126,7 +130,7 @@
                 </div>
                 <div class="rTableRow" id="fatty_infiltration_row">
                     <div class="rTableCell">
-                        <label for="full_thickness">Infraspinatus Goutallier Classification</label>
+                        <label for="fatty_infiltration">Infraspinatus Goutallier Classification</label>
                     </div>
                     <div class="rTableCell">
                         <select id="fatty_infiltration">

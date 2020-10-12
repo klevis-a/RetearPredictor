@@ -8,6 +8,8 @@ from pynamodb.attributes import UnicodeAttribute, NumberAttribute, BooleanAttrib
 
 
 class PredictionSchema(Schema):
+    """Validator for web service input, relying on Marshmallow."""
+
     AGE_REQUIRED_ERROR = 'Please enter age of patient.'
     AGE_INVALID_ERROR = 'Age of patient must be between 19 and 90.'
 
@@ -80,6 +82,8 @@ class PredictionSchema(Schema):
 
 
 class PredictionModel(Model):
+    """DynamoDB table model relying on pynamodb."""
+
     class Meta:
         table_name = os.environ['DYNAMO_TABLE_NAME']
         region = os.environ['DYNAMO_REGION']
@@ -113,6 +117,15 @@ class PredictionModel(Model):
 
 
 class Prediction:
+    """Prediction based on supplied input."""
+
+    # The values for the fields below can be found in index.html but I am listing them here for ease of use:
+    # gender: Female (True, 1), Male (False, 0)
+    # osteoporosis: Yes (True, 1), No (False, 0)
+    # work_activity_level: High (1), Not High (0)
+    # full_thickness: Yes (True, 1), No (False, 0)
+    # fatty infiltration: Goutallier Classification >= 2 (True, 1), Goutallier Classification <>=> 2 (False, 0)
+
     def __init__(self, age, gender, osteoporosis, work_activity_level, tear_width, tear_retraction, full_thickness,
                  fatty_infiltration):
         self.age = age
