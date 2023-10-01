@@ -90,7 +90,7 @@ class PredictionModel(Model):
         write_capacity_units = os.environ['DYNAMO_WCU']
         read_capacity_units = os.environ['DYNAMO_RCU']
 
-    id = UnicodeAttribute()
+    id = UnicodeAttribute(hash_key=True)
     age = NumberAttribute()
     gender = BooleanAttribute()
     osteoporosis = BooleanAttribute()
